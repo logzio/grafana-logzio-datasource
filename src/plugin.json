@@ -1,0 +1,29 @@
+{
+  "type": "datasource",
+  "name": "Logz.io",
+  "id": "logzio",
+
+  "info": {
+    "description": "Logz.io Data Source for Grafana",
+    "author": {
+      "name": "Logzio Project",
+      "url": "https://logz.io"
+    },
+    "keywords": ["logzio"],
+    "logos": {
+      "small": "img/logzio.png",
+      "large": "img/logzio.png"
+    },
+    "links": [
+      {"name": "logz.io", "url": "https://logz.io"}
+    ],
+    "version": "5.0.0"
+  },
+
+  "annotations": true,
+  "metrics": true,
+
+  "queryOptions": {
+    "minInterval": true
+  }
+}
