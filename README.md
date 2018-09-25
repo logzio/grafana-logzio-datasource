@@ -27,7 +27,7 @@ To complete this procedure, you'll need:
 |---|---|---|
 | | Name | _Custom data source name_ (This is the Data Source you'll use for your Grafana graphs.) |
 | | Type | Logz.io |
-| **HTTP**  | URL  | `https://api.logz.io/v1/elasticsearch` |
+| **HTTP**  | URL  | `https://api.logz.io/v1/elasticsearch` (US Accounts) or `https://api-eu.logz.io/v1/elasticsearch` (EU Accounts) |
 | **Custom Headers** | Key  | `X-API-TOKEN` |
 | | Value | _Your Logz.io API token_  |
 | **Elasticsearch details**  | Index name | _Custom name_ |
