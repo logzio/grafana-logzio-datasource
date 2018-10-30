@@ -30,7 +30,6 @@
     "karma-chrome-launcher": "^2.2.0",
     "karma-expect": "^1.1.3",
     "karma-mocha": "^1.3.0",
-    "karma-phantomjs-launcher": "^1.0.4",
     "karma-sinon": "^1.0.5",
     "karma-systemjs": "^0.16.0",
     "load-grunt-tasks": "^3.5.2",
