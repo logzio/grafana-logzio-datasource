@@ -255,6 +255,9 @@ System.register(["angular", "lodash", "moment", "./query_builder", "./index_patt
                 };
                 LogzioDatasource.prototype.getFields = function (query) {
                     return this.get('/_mapping').then(function (result) {
+                        if (result.code >= 400) {
+                            throw { status: "Logz.io API: " + result.code + " " + result.message };
+                        }
                         var typeMap = {
                             float: 'number',
                             double: 'number',

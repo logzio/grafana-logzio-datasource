@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "Logz.io",
-  "id": "logzio",
+  "id": "logzio-datasource",
 
   "info": {
     "description": "Logz.io Data Source for Grafana",
