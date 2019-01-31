@@ -286,6 +286,11 @@ export class LogzioDatasource {
 
   getFields(query) {
     return this.get('/_mapping').then(function(result) {
+
+      if (result.code >= 400) {
+        throw {status: `Logz.io API: ${result.code} ${result.message}`};
+      }
+
       var typeMap = {
         float: 'number',
         double: 'number',
