@@ -39,23 +39,12 @@ export class LogzioDatasource {
   }
 
   private request(method, url, data?) {
+    const routeKey = 'logzio';
     var options: any = {
-      url: this.url + '/' + url,
+      url: `${this.url}/${routeKey}/${url}`,
       method: method,
       data: data,
-      headers : {}
     };
-    for (let header of this.headers) {
-      options.headers[header.key] = header.value;
-    }
-    console.log(options.headers);
-
-    if (this.basicAuth || this.withCredentials) {
-      options.withCredentials = true;
-    }
-    if (this.basicAuth) {
-      options.headers['Authorization'] = this.basicAuth;
-    }
 
     return this.backendSrv.datasourceRequest(options);
   }

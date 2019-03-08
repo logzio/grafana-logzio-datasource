@@ -47,23 +47,12 @@ System.register(["angular", "lodash", "moment", "./query_builder", "./index_patt
                     this.headers = instanceSettings.jsonData.headers;
                 }
                 LogzioDatasource.prototype.request = function (method, url, data) {
+                    var routeKey = 'logzio';
                     var options = {
-                        url: this.url + '/' + url,
+                        url: this.url + "/" + routeKey + "/" + url,
                         method: method,
                         data: data,
-                        headers: {}
                     };
-                    for (var _i = 0, _a = this.headers; _i < _a.length; _i++) {
-                        var header = _a[_i];
-                        options.headers[header.key] = header.value;
-                    }
-                    console.log(options.headers);
-                    if (this.basicAuth || this.withCredentials) {
-                        options.withCredentials = true;
-                    }
-                    if (this.basicAuth) {
-                        options.headers['Authorization'] = this.basicAuth;
-                    }
                     return this.backendSrv.datasourceRequest(options);
                 };
                 LogzioDatasource.prototype.get = function (url) {
