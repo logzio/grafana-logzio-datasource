@@ -18,4 +18,5 @@ export declare class LogzioConfigCtrl {
     indexPatternTypeChanged(): void;
     addHeader(): void;
     removeHeader($index: any): void;
+    getSuggestUrls(): string[];
 }
