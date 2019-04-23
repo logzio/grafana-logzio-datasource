@@ -1,7 +1,7 @@
 export declare class LogzioConfigCtrl {
     static templateUrl: string;
     current: any;
-    constructor($scope: any);
+    constructor();
     indexPatternTypes: ({
         name: string;
         value: any;
@@ -16,7 +16,6 @@ export declare class LogzioConfigCtrl {
         value: number;
     }[];
     indexPatternTypeChanged(): void;
-    addHeader(): void;
-    removeHeader($index: any): void;
     getSuggestUrls(): string[];
+    migrateUrlAndApiKey(instanceSettings: any): void;
 }

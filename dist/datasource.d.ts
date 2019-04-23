@@ -16,10 +16,6 @@ export declare class LogzioDatasource {
     maxConcurrentShardRequests: number;
     queryBuilder: ElasticQueryBuilder;
     indexPattern: IndexPattern;
-    headers: {
-        key: string;
-        value: string;
-    }[];
     constructor(instanceSettings: any, $q: any, backendSrv: any, templateSrv: any, timeSrv: any);
     private request(method, url, data?);
     private get(url);
