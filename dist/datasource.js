@@ -39,31 +39,20 @@ System.register(["angular", "lodash", "moment", "./query_builder", "./index_patt
                     this.esVersion = instanceSettings.jsonData.esVersion;
                     this.indexPattern = new index_pattern_1.IndexPattern(instanceSettings.index, instanceSettings.jsonData.interval);
                     this.interval = instanceSettings.jsonData.timeInterval;
-                    this.maxConcurrentShardRequests = instanceSettings.jsonData.maxConcurrentShardRequests;
+                    this.maxConcurrentShardRequests =
+                        instanceSettings.jsonData.maxConcurrentShardRequests;
                     this.queryBuilder = new query_builder_1.ElasticQueryBuilder({
                         timeField: this.timeField,
                         esVersion: this.esVersion,
                     });
-                    this.headers = instanceSettings.jsonData.headers;
                 }
                 LogzioDatasource.prototype.request = function (method, url, data) {
+                    var routeKey = 'logzio';
                     var options = {
-                        url: this.url + '/' + url,
+                        url: this.url + "/" + routeKey + "/" + url,
                         method: method,
                         data: data,
-                        headers: {}
                     };
-                    for (var _i = 0, _a = this.headers; _i < _a.length; _i++) {
-                        var header = _a[_i];
-                        options.headers[header.key] = header.value;
-                    }
-                    console.log(options.headers);
-                    if (this.basicAuth || this.withCredentials) {
-                        options.withCredentials = true;
-                    }
-                    if (this.basicAuth) {
-                        options.headers['Authorization'] = this.basicAuth;
-                    }
                     return this.backendSrv.datasourceRequest(options);
                 };
                 LogzioDatasource.prototype.get = function (url) {
@@ -237,7 +226,9 @@ System.register(["angular", "lodash", "moment", "./query_builder", "./index_patt
                         var queryString = this.templateSrv.replace(target.query || '*', options.scopedVars, 'lucene');
                         var queryObj = this.queryBuilder.build(target, adhocFilters, queryString);
                         var esQuery = angular_1.default.toJson(queryObj);
-                        var searchType = queryObj.size === 0 && this.esVersion < 5 ? 'count' : 'query_then_fetch';
+                        var searchType = queryObj.size === 0 && this.esVersion < 5
+                            ? 'count'
+                            : 'query_then_fetch';
                         var header = this.getQueryHeader(searchType, options.range.from, options.range.to);
                         payload += header + '\n';
                         payload += esQuery + '\n';

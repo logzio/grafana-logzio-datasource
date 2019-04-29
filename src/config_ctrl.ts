@@ -5,11 +5,17 @@ export class LogzioConfigCtrl {
   current: any;
 
   /** @ngInject */
-  constructor($scope) {
-    this.current.jsonData.timeField = this.current.jsonData.timeField || '@timestamp';
+  constructor() {
+    this.current.secureJsonData = this.current.secureJsonData || {};
+    this.current.secureJsonFields = this.current.secureJsonFields || {};
+
+    this.current.jsonData.timeField =
+      this.current.jsonData.timeField || '@timestamp';
     this.current.jsonData.esVersion = this.current.jsonData.esVersion || 5;
-    this.current.jsonData.maxConcurrentShardRequests = this.current.jsonData.maxConcurrentShardRequests || 256;
-    this.current.jsonData.headers = this.current.jsonData.headers || [ { key : "", value: "" } ];
+    this.current.jsonData.maxConcurrentShardRequests =
+      this.current.jsonData.maxConcurrentShardRequests || 256;
+
+    this.migrateUrlAndApiKey(this.current);
   }
 
   indexPatternTypes = [
@@ -21,7 +27,11 @@ export class LogzioConfigCtrl {
     { name: 'Yearly', value: 'Yearly', example: '[logstash-]YYYY' },
   ];
 
-  esVersions = [{ name: '2.x', value: 2 }, { name: '5.x', value: 5 }, { name: '5.6+', value: 56 }];
+  esVersions = [
+    { name: '2.x', value: 2 },
+    { name: '5.x', value: 5 },
+    { name: '5.6+', value: 56 },
+  ];
 
   indexPatternTypeChanged() {
     var def = _.find(this.indexPatternTypes, {
@@ -30,13 +40,38 @@ export class LogzioConfigCtrl {
     this.current.database = def.example || 'es-index-name';
   }
 
-  addHeader() {
-    var addIndex = this.current.jsonData.headers.length;
-
-    this.current.jsonData.headers.splice(addIndex, 0, { key : "", value: "" });
+  getSuggestUrls() {
+    return [
+      'https://api.logz.io/v1/elasticsearch',
+      'https://api-eu.logz.io/v1/elasticsearch',
+    ];
   }
 
-  removeHeader($index) {
-    this.current.jsonData.headers.splice($index, 1);
+  migrateUrlAndApiKey(instanceSettings) {
+    if (
+      (!instanceSettings.jsonData.url ||
+        instanceSettings.jsonData.url.length === 0) &&
+      !instanceSettings.jsonData.url
+    ) {
+      instanceSettings.jsonData.url = instanceSettings.url || '';
+    }
+
+    if (
+      !instanceSettings.secureJsonFields.apiKey &&
+      instanceSettings.jsonData.headers &&
+      instanceSettings.jsonData.headers.length > 0
+    ) {
+      const headerIndexToMigrate = instanceSettings.jsonData.headers.findIndex(
+        e => {
+          return e.key === 'X-API-TOKEN';
+        },
+      );
+
+      if (headerIndexToMigrate > -1) {
+        instanceSettings.secureJsonData.apiKey =
+          instanceSettings.jsonData.headers[headerIndexToMigrate].value;
+        instanceSettings.jsonData.headers.splice(headerIndexToMigrate, 1);
+      }
+    }
   }
 }

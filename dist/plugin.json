@@ -25,5 +25,14 @@
 
   "queryOptions": {
     "minInterval": true
-  }
+  },
+
+  "routes": [
+    {
+      "path": "logzio",
+      "method": "*",
+      "url": "{{.JsonData.url}}",
+      "headers": [{ "name": "X-API-TOKEN", "content": "{{.SecureJsonData.apiKey}}" }]
+    }
+  ]
 }

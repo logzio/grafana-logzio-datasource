@@ -17,10 +17,15 @@ export class LogzioDatasource {
   maxConcurrentShardRequests: number;
   queryBuilder: ElasticQueryBuilder;
   indexPattern: IndexPattern;
-  headers: { key: string, value: string }[];
 
   /** @ngInject */
-  constructor(instanceSettings, private $q, private backendSrv, private templateSrv, private timeSrv) {
+  constructor(
+    instanceSettings,
+    private $q,
+    private backendSrv,
+    private templateSrv,
+    private timeSrv,
+  ) {
     this.basicAuth = instanceSettings.basicAuth;
     this.withCredentials = instanceSettings.withCredentials;
     this.url = instanceSettings.url;
@@ -28,48 +33,46 @@ export class LogzioDatasource {
     this.index = instanceSettings.index;
     this.timeField = instanceSettings.jsonData.timeField;
     this.esVersion = instanceSettings.jsonData.esVersion;
-    this.indexPattern = new IndexPattern(instanceSettings.index, instanceSettings.jsonData.interval);
+    this.indexPattern = new IndexPattern(
+      instanceSettings.index,
+      instanceSettings.jsonData.interval,
+    );
     this.interval = instanceSettings.jsonData.timeInterval;
-    this.maxConcurrentShardRequests = instanceSettings.jsonData.maxConcurrentShardRequests;
+    this.maxConcurrentShardRequests =
+      instanceSettings.jsonData.maxConcurrentShardRequests;
     this.queryBuilder = new ElasticQueryBuilder({
       timeField: this.timeField,
       esVersion: this.esVersion,
     });
-    this.headers = instanceSettings.jsonData.headers;
   }
 
   private request(method, url, data?) {
+    const routeKey = 'logzio';
     var options: any = {
-      url: this.url + '/' + url,
+      url: `${this.url}/${routeKey}/${url}`,
       method: method,
       data: data,
-      headers : {}
     };
-    for (let header of this.headers) {
-      options.headers[header.key] = header.value;
-    }
-    console.log(options.headers);
-
-    if (this.basicAuth || this.withCredentials) {
-      options.withCredentials = true;
-    }
-    if (this.basicAuth) {
-      options.headers['Authorization'] = this.basicAuth;
-    }
 
     return this.backendSrv.datasourceRequest(options);
   }
 
   private get(url) {
     var range = this.timeSrv.timeRange();
-    var index_list = this.indexPattern.getIndexList(range.from.valueOf(), range.to.valueOf());
+    var index_list = this.indexPattern.getIndexList(
+      range.from.valueOf(),
+      range.to.valueOf(),
+    );
     if (_.isArray(index_list) && index_list.length) {
       return this.request('GET', index_list[0] + url).then(function(results) {
         results.data.$$config = results.config;
         return results.data;
       });
     } else {
-      return this.request('GET', this.indexPattern.getIndexForToday() + url).then(function(results) {
+      return this.request(
+        'GET',
+        this.indexPattern.getIndexForToday() + url,
+      ).then(function(results) {
         results.data.$$config = results.config;
         return results.data;
       });
@@ -141,7 +144,10 @@ export class LogzioDatasource {
     if (annotation.index) {
       header.index = annotation.index;
     } else {
-      header.index = this.indexPattern.getIndexList(options.range.from, options.range.to);
+      header.index = this.indexPattern.getIndexList(
+        options.range.from,
+        options.range.to,
+      );
     }
 
     var payload = angular.toJson(header) + '\n' + angular.toJson(data) + '\n';
@@ -229,7 +235,7 @@ export class LogzioDatasource {
         } else {
           return { status: 'error', message: err.status };
         }
-      }
+      },
     );
   }
 
@@ -240,7 +246,9 @@ export class LogzioDatasource {
       index: this.indexPattern.getIndexList(timeFrom, timeTo),
     };
     if (this.esVersion >= 56) {
-      query_header['max_concurrent_shard_requests'] = this.maxConcurrentShardRequests;
+      query_header[
+        'max_concurrent_shard_requests'
+      ] = this.maxConcurrentShardRequests;
     }
     return angular.toJson(query_header);
   }
@@ -259,12 +267,23 @@ export class LogzioDatasource {
         continue;
       }
 
-      var queryString = this.templateSrv.replace(target.query || '*', options.scopedVars, 'lucene');
+      var queryString = this.templateSrv.replace(
+        target.query || '*',
+        options.scopedVars,
+        'lucene',
+      );
       var queryObj = this.queryBuilder.build(target, adhocFilters, queryString);
       var esQuery = angular.toJson(queryObj);
 
-      var searchType = queryObj.size === 0 && this.esVersion < 5 ? 'count' : 'query_then_fetch';
-      var header = this.getQueryHeader(searchType, options.range.from, options.range.to);
+      var searchType =
+        queryObj.size === 0 && this.esVersion < 5
+          ? 'count'
+          : 'query_then_fetch';
+      var header = this.getQueryHeader(
+        searchType,
+        options.range.from,
+        options.range.to,
+      );
       payload += header + '\n';
 
       payload += esQuery + '\n';
@@ -286,9 +305,8 @@ export class LogzioDatasource {
 
   getFields(query) {
     return this.get('/_mapping').then(function(result) {
-
       if (result.code >= 400) {
-        throw {status: `Logz.io API: ${result.code} ${result.message}`};
+        throw { status: `Logz.io API: ${result.code} ${result.message}` };
       }
 
       var typeMap = {
@@ -378,19 +396,21 @@ export class LogzioDatasource {
     esQuery = esQuery.replace(/\$timeTo/g, range.to.valueOf());
     esQuery = header + '\n' + esQuery + '\n';
 
-    return this.post('_msearch?search_type=' + searchType, esQuery).then(function(res) {
-      if (!res.responses[0].aggregations) {
-        return [];
-      }
+    return this.post('_msearch?search_type=' + searchType, esQuery).then(
+      function(res) {
+        if (!res.responses[0].aggregations) {
+          return [];
+        }
 
-      var buckets = res.responses[0].aggregations['1'].buckets;
-      return _.map(buckets, function(bucket) {
-        return {
-          text: bucket.key_as_string || bucket.key,
-          value: bucket.key,
-        };
-      });
-    });
+        var buckets = res.responses[0].aggregations['1'].buckets;
+        return _.map(buckets, function(bucket) {
+          return {
+            text: bucket.key_as_string || bucket.key,
+            value: bucket.key,
+          };
+        });
+      },
+    );
   }
 
   metricFindQuery(query) {
