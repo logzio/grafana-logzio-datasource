@@ -29,5 +29,7 @@ For more information on finding your account's region, see [Account region](http
 
 In **Logz.io API Key**, paste an [API token](https://app.logz.io/#/dashboard/settings/api-tokens) from the account you want to use.
 
+Leave the _Elasticsearch details_ section as it is—Logz.io overrides these settings.
+
 Click **Save & Test**.
 If the test passes, you can now use Logz.io as a data source.
