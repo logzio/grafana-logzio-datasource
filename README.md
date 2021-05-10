@@ -1,5 +1,7 @@
 # Logz.io data source for Grafana
 
+Please note that this pluging is for our old metrics solution and will be depreacted in the near future 
+
 Logz.io is an official Grafana data source plugin.
 The plugin allows you to view your Logz.io-stored metrics in a Grafana instance that you manage.
 
